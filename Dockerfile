@@ -114,4 +114,9 @@ ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 ENV HERMES_HOME=/opt/data
 ENV PATH="/opt/data/.local/bin:${PATH}"
 # Railway: Dockerfile VOLUME is rejected by Railway builders. Mount a Railway Volume at /opt/data in the service (matches HERMES_HOME).
+#
+# Default process: web dashboard (login UI). Do not set Railway "Custom Start Command"
+# to `gateway run` — that bypasses ENTRYPOINT and looks for a `gateway` binary.
+# Gateway/API on 8642: use a separate deploy or override CMD to e.g. gateway run.
 ENTRYPOINT [ "/usr/bin/tini", "-g", "--", "/opt/hermes/docker/entrypoint.sh" ]
+CMD [ "dashboard", "--host", "0.0.0.0", "--insecure", "--no-open" ]

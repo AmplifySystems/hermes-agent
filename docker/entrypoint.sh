@@ -139,6 +139,22 @@ case "${HERMES_DASHBOARD:-}" in
         ;;
 esac
 
+# Railway / Render / Fly: HTTP routers inject PORT. When the main process is
+# `hermes dashboard` and --port is not passed, append --port "$PORT" so the
+# web UI binds where the platform forwards traffic (e.g. hermes.amplifysystems.io).
+if [[ $# -ge 1 && "$1" == dashboard && -n "${PORT:-}" ]]; then
+    has_port=0
+    for ((i = 1; i <= $#; i++)); do
+        if [[ "${!i}" == --port ]]; then
+            has_port=1
+            break
+        fi
+    done
+    if [[ $has_port -eq 0 ]]; then
+        set -- "$@" --port "$PORT"
+    fi
+fi
+
 # Final exec: two supported invocation patterns.
 #
 #   docker run <image>                 -> exec `hermes` with no args (legacy default)
